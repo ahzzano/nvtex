@@ -83,7 +83,6 @@ function M.setup()
         pattern = { "*.tex", "*.latex" },
         callback = function()
             if not M.state.live_compile then
-                vim.print("Live compilation disabled")
                 return
             end
             if next(M.state.files_to_compile) ~= nil then
