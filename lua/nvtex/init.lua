@@ -31,7 +31,7 @@ function check_error(line)
     end
 
     if string.sub(line, 1, 1) == '!' then
-        print('An error has occured')
+        vim.print('An error has occured')
     end
 end
 
@@ -73,9 +73,9 @@ function M.setup()
     vim.api.nvim_create_user_command("LatexLiveCompile", function()
         M.state.live_compile = not M.state.live_compile
         if M.state.live_compile then
-            print("Live Latex Compilation Enabled")
+            vim.print("Live Latex Compilation Enabled")
         else
-            print("Live Latex Compilation Disabled")
+            vim.print("Live Latex Compilation Disabled")
         end
     end, {})
 
@@ -83,16 +83,16 @@ function M.setup()
         pattern = { "*.tex", "*.latex" },
         callback = function()
             if not M.state.live_compile then
-                print("Live compilation disabled")
+                vim.print("Live compilation disabled")
                 return
             end
             if next(M.state.files_to_compile) ~= nil then
                 for k, v in pairs(M.state.files_to_compile) do
-                    print("Compiling " .. v .. "...")
+                    vim.print("Compiling " .. v .. "...")
                     M.compile_file(v)
                 end
             else
-                print("Compiling current buffer")
+                vim.print("Compiling current buffer")
                 M.compile_current_buffer()
             end
         end
