@@ -64,7 +64,7 @@ end
 function M.setup()
     vim.api.nvim_create_user_command("LatexAddToCompile", function()
         local currentbuffer = vim.api.nvim_buf_get_name(0)
-        if vim.bo.filetype == 'latex' then
+        if vim.bo.filetype == 'latex' or vim.bo.filetype == 'tex' then
             table.insert(M.state.files_to_compile, currentbuffer)
         end
     end, {})
@@ -86,6 +86,7 @@ function M.setup()
             end
             if next(M.state.files_to_compile) == nil then
                 for k, v in pairs(M.state.files_to_compile) do
+                    print("Compiling " .. v .. "...")
                     M.compile_file(v)
                 end
             else
