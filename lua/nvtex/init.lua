@@ -86,7 +86,7 @@ function M.setup()
                 print("Live compilation disabled")
                 return
             end
-            if not next(M.state.files_to_compile) then
+            if next(M.state.files_to_compile) then
                 for k, v in pairs(M.state.files_to_compile) do
                     print("Compiling " .. v .. "...")
                     M.compile_file(v)
