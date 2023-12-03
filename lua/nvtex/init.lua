@@ -66,6 +66,7 @@ function M.setup()
         local currentbuffer = vim.api.nvim_buf_get_name(0)
         if vim.bo.filetype == 'latex' or vim.bo.filetype == 'tex' then
             table.insert(M.state.files_to_compile, currentbuffer)
+            print("Added file to compilation targets")
         end
     end, {})
 
@@ -90,6 +91,7 @@ function M.setup()
                     M.compile_file(v)
                 end
             else
+                print("Compiling current buffer")
                 M.compile_current_buffer()
             end
         end
