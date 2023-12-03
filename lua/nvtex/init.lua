@@ -15,6 +15,7 @@ local default_settings = {
 
 M.state = {
     live_compile = false,
+    files_to_compile = {}
 }
 function split_once(inputstr, sep)
     local prefix, suffix = inputstr:match("(.-)%s(.+)")
@@ -47,15 +48,34 @@ function M.compile_current_buffer()
     }):start()
 end
 
+function M.compile_file(file)
+    local currentbuffer = vim.api.nvim_buf_get_name(0)
+
+    job:new({
+        command = 'pdflatex',
+        args = { file },
+        cwd = './',
+        on_stdout = function(j, return_val)
+            check_error(return_val)
+        end,
+    }):start()
+end
+
 function M.setup()
-    vim.api.nvim_create_user_command("LatexEnableLiveCompile", function()
-        M.state.live_compile = true
-        print("Live Latex Compilation Enabled")
+    vim.api.nvim_create_user_command("LatexAddToCompile", function()
+        local currentbuffer = vim.api.nvim_buf_get_name(0)
+        if vim.bo.filetype == 'latex' then
+            table.insert(M.state.files_to_compile, currentbuffer)
+        end
     end, {})
 
-    vim.api.nvim_create_user_command("LatexDisableLiveCompile", function()
-        M.state.live_compile = false
-        print("Live Latex Compilation Disabled")
+    vim.api.nvim_create_user_command("LatexLiveCompile", function()
+        M.state.live_compile = not M.state.live_compile
+        if M.state.live_compile then
+            print("Live Latex Compilation Enabled")
+        else
+            print("Live Latex Compilation Disabled")
+        end
     end, {})
 
     vim.api.nvim_create_autocmd({ "BufWritePost" }, {
@@ -64,8 +84,13 @@ function M.setup()
             if not M.state.live_compile then
                 return
             end
-
-            M.compile_current_buffer()
+            if next(M.state.files_to_compile) == nil then
+                for k, v in pairs(M.state.files_to_compile) do
+                    M.compile_file(v)
+                end
+            else
+                M.compile_current_buffer()
+            end
         end
     })
 end
