@@ -1,12 +1,10 @@
 local M = {}
 
+-- other stuff
+local utils = require 'nvtex.utils'
+
 -- Plenary
 local job = require 'plenary.job'
-
--- Telescope
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
-local conf = require("telescope.config").values
 
 local default_settings = {
     pdfviewer = "sumatra",
@@ -17,23 +15,6 @@ M.state = {
     live_compile = false,
     files_to_compile = {}
 }
-function split_once(inputstr, sep)
-    local prefix, suffix = inputstr:match("(.-)%s(.+)")
-    local t = {}
-    table.insert(t, prefix)
-    table.insert(t, suffix)
-    return t
-end
-
-function check_error(line)
-    if type(line) ~= "string" then
-        return
-    end
-
-    if string.sub(line, 1, 1) == '!' then
-        vim.print('An error has occured')
-    end
-end
 
 function M.compile_current_buffer()
     local currentbuffer = vim.api.nvim_buf_get_name(0)
@@ -43,7 +24,7 @@ function M.compile_current_buffer()
         args = { currentbuffer },
         cwd = './',
         on_stdout = function(j, return_val)
-            check_error(return_val)
+            utils.check_error(return_val)
         end,
     }):start()
 end
@@ -56,7 +37,7 @@ function M.compile_file(file)
         args = { file },
         cwd = './',
         on_stdout = function(j, return_val)
-            check_error(return_val)
+            utils.check_error(return_val)
         end,
     }):start()
 end
